@@ -3,9 +3,42 @@ let boardWidth = window.innerWidth;
 let boardHeight = window.innerHeight;
 let context;
 
-let y = 100;
-let velocity = 100;
+let deltaTime = 0;
 let lastFrameTime = null;
+
+const gravity = 9.8;
+
+class Player {
+    constructor(positon) {
+        this.positon = positon
+        this.velocity ={
+            x:0,
+            y:100
+        }
+        this.height = 100
+        this.width = 100
+    }
+
+    draw(){
+        context.fillStyle = 'red';
+        context.fillRect(this.positon.x, this.positon.y, this.width, this.width);
+    }
+
+    move() {
+        this.draw();
+        this.positon.y += this.velocity.y * deltaTime;
+        if(this.positon.y + this.height + this.velocity.y*deltaTime < boardHeight){
+            this.velocity.y += gravity;
+        }
+        else{
+            this.velocity.y = 0;
+        }
+    }
+}
+
+const player = new Player({x: 100, y: 100});
+const player2 = new Player({x: 300, y: 100});
+
 
 window.onload = function() {
     board = document.getElementById('board');
@@ -13,25 +46,19 @@ window.onload = function() {
     board.height = boardHeight;
     context = board.getContext('2d');
 
-    context.fillStyle = 'red';
-    context.fillRect(100, 100, 100, 100);
-
     requestAnimationFrame(update);
 }
 
 function update(timestamp) {
-    let deltaTime = getDeltaTime(timestamp);
-    y += velocity * deltaTime;
+    deltaTime = getDeltaTime(timestamp);
 
     context.clearRect(0, 0, board.width, board.height);
 
-    context.fillStyle = 'red';
-    context.fillRect(100, y, 100, 100);
+    player.move();
+    player2.move();
 
     requestAnimationFrame(update);
 }
-
-
 
 window.addEventListener("resize", function() {
     board.width = window.innerWidth;
@@ -47,3 +74,4 @@ function getDeltaTime(timestamp) {
 
     return deltaTime;
 }
+
