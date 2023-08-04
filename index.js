@@ -6,6 +6,21 @@ let context;
 let deltaTime = 0;
 let lastFrameTime = null;
 
+const floorCollisions2D = [];
+for(let i=0; i<floorCollisions.length; i+=36){
+    floorCollisions2D.push(floorCollisions.slice(i, i+36));
+}
+
+const collisionBlocks = [];
+
+floorCollisions2D.forEach((row, y)=>{
+    row.forEach((symbol, x)=>{
+        if(symbol===202){
+            collisionBlocks.push(new CollisionBlock({position: {x: x * 16 , y: y * 16}}));
+        }
+    })
+});
+
 const key={
     d:{
         pressed: false,
@@ -19,58 +34,6 @@ const key={
 }
 
 const gravity = 9.8;
-
-//player class
-class Player {
-    constructor(positon) {
-        this.positon = positon
-        this.velocity ={
-            x:0,
-            y:100
-        }
-        this.height = 100
-        this.width = 100
-    }
-
-    draw(){
-        context.fillStyle = 'red';
-        context.fillRect(this.positon.x, this.positon.y, this.width, this.width);
-    }
-
-    move() {
-        this.draw();
-        this.positon.y += this.velocity.y * deltaTime;
-        if(this.positon.y + this.height + this.velocity.y*deltaTime < boardHeight){
-            this.velocity.y += gravity;
-        }
-        else{
-            this.velocity.y = 0;
-        }
-
-        this.positon.x += this.velocity.x * deltaTime;
-    }
-}
-
-//sprite class
-class Sprite{
-    constructor({imageSrc, position, size}){
-        this.image = new Image();
-        this.image.src = './Assets/'+imageSrc+'.png';
-        this.position = position;
-        this.size = size;
-    }
-
-    draw(){
-        if(!this.image){
-            return;
-        }
-        context.drawImage(this.image, this.position.x, this.position.y);
-    }
-
-    move(){
-        this.draw();
-    }
-}
 
 const background = new Sprite({imageSrc: 'background', position: {x: 0, y: 0}, size: {width: boardWidth, height: boardHeight}});
 
@@ -97,6 +60,9 @@ function update(timestamp) {
     context.scale(4, 4);
     context.translate(0, -background.image.height + board.height/4)
     background.move();
+    collisionBlocks.forEach((collisionBlock)=>{
+        collisionBlock.move();
+    });
     context.restore();
 
     player.move();
