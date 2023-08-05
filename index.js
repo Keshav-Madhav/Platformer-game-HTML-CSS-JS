@@ -92,10 +92,10 @@ function update(timestamp) {
 
     player.velocity.x = 0;
     if(key.d.pressed){
-        player.velocity.x = 300/4;
+        player.velocity.x = 400/4;
     }
     else if(key.a.pressed){
-        player.velocity.x = -300/4;
+        player.velocity.x = -400/4;
     }
     context.restore();
 
