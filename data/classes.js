@@ -1,24 +1,70 @@
+//sprite class
+class Sprite{
+    constructor({imageSrc, position, frameSize=1, frameBuffer=10, scale=1}){
+        this.scale=scale;
+        this.image = new Image();
+        this.image.src = imageSrc;
+        this.position = position;
+        this.image.onload = ()=>{
+            this.width = (this.image.width/this.frameSize) * this.scale;
+            this.height = this.image.height * this.scale;
+        }
+        this.frameSize = frameSize;
+        this.currentFrame = 0;
+        this.frameBuffer = frameBuffer;
+        this.elapsedFrames = 0 ;
+    }
+
+    draw(){
+        if(!this.image){
+            return;
+        }
+        const cropBox = {
+            position:{
+                x: this.currentFrame * (this.image.width/this.frameSize),
+                y: 0,
+            },
+            width: this.image.width/this.frameSize,
+            height: this.image.height,
+        }
+
+        context.drawImage(this.image, cropBox.position.x, cropBox.position.y, cropBox.width, cropBox.height, this.position.x, this.position.y, this.width, this.height);
+    }
+
+    render(){
+        this.draw();
+        this.renderFrames();
+    }
+
+    renderFrames(){
+        this.elapsedFrames++;
+        if(this.elapsedFrames % this.frameBuffer === 0){
+            this.currentFrame++;
+            if(this.currentFrame >= this.frameSize){
+                this.currentFrame = 0;
+            }
+        }
+    }
+}
+
 
 //player class
-class Player {
-    constructor({position, collisionBlocks}) {
+class Player extends Sprite{
+    constructor({position, collisionBlocks, imageSrc, frameSize, scale=0.5}) {
+        super({imageSrc: imageSrc, position: position, frameSize: frameSize, scale: scale});
         this.position = position;
         this.velocity ={
             x:0,
             y:100/4
         };
-        this.height = 100/4;
-        this.width = 100/4;
-
+    
         this.collisionBlocks = collisionBlocks;
     }
 
-    draw(){
-        context.fillStyle = 'red';
-        context.fillRect(this.position.x, this.position.y, this.width, this.width);
-    }
-
     move() {
+        this.renderFrames();
+        context.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        context.fillRect(this.position.x, this.position.y, this.width, this.height);
         this.draw();
 
         //moving
@@ -69,28 +115,7 @@ class Player {
     }
 }
 
-//sprite class
-class Sprite{
-    constructor({imageSrc, position}){
-        this.image = new Image();
-        this.image.src = './Assets/'+imageSrc+'.png';
-        this.position = position;
-    }
-
-    draw(){
-        if(!this.image){
-            return;
-        }
-        context.drawImage(this.image, this.position.x, this.position.y);
-    }
-
-    render(){
-        this.draw();
-    }
-}
-
 //collision block class
-
 class CollisionBlock{
     constructor({position}){
         this.position = position;

@@ -50,11 +50,13 @@ const key={
 
 const gravity = 6.8;
 
-const background = new Sprite({imageSrc: 'background', position: {x: 0, y: 0}, size: {width: boardWidth, height: boardHeight}});
+const background = new Sprite({imageSrc: './Assets/background.png', position: {x: 0, y: 0}, size: {width: boardWidth, height: boardHeight}});
 
 const player = new Player({
     position:{x: boardWidth/8, y: boardHeight/2.5},
     collisionBlocks,
+    imageSrc: './Assets/warrior/Idle.png',
+    frameSize: 8,
 });
 
 //when the window is loaded
