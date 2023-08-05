@@ -1,32 +1,71 @@
 
 //player class
 class Player {
-    constructor(positon) {
-        this.positon = positon
+    constructor({position, collisionBlocks}) {
+        this.position = position;
         this.velocity ={
             x:0,
-            y:100
-        }
-        this.height = 100
-        this.width = 100
+            y:100/4
+        };
+        this.height = 100/4;
+        this.width = 100/4;
+
+        this.collisionBlocks = collisionBlocks;
     }
 
     draw(){
         context.fillStyle = 'red';
-        context.fillRect(this.positon.x, this.positon.y, this.width, this.width);
+        context.fillRect(this.position.x, this.position.y, this.width, this.width);
     }
 
     move() {
         this.draw();
-        this.positon.y += this.velocity.y * deltaTime;
-        if(this.positon.y + this.height + this.velocity.y*deltaTime < boardHeight){
-            this.velocity.y += gravity;
-        }
-        else{
-            this.velocity.y = 0;
-        }
 
-        this.positon.x += this.velocity.x * deltaTime;
+        //moving
+        this.position.x += this.velocity.x * deltaTime;
+        this.checkHorzCollision();
+        this.position.y += this.velocity.y * deltaTime;
+        this.velocity.y += gravity;
+        this.checkVertCollision();
+
+    }
+
+    checkHorzCollision(){
+        for(let i=0; i< this.collisionBlocks.length; i++){
+            const block = this.collisionBlocks[i];
+
+            if(collisionDetection({object1: this, object2: block})){
+                if(this.velocity.x * deltaTime > 0){
+                    this.velocity.x = 0;
+                    this.position.x = block.position.x - this.width - 0.01;
+                    break;
+                }
+                if(this.velocity.x * deltaTime < 0){
+                    this.velocity.x = 0;
+                    this.position.x = block.position.x + block.width + 0.01;
+                    break
+                }
+            }
+        }
+    }
+
+    checkVertCollision(){
+        for(let i=0; i< this.collisionBlocks.length; i++){
+            const block = this.collisionBlocks[i];
+
+            if(collisionDetection({object1: this, object2: block})){
+                if(this.velocity.y*deltaTime > 0){
+                    this.velocity.y = 0;
+                    this.position.y = block.position.y - this.height - 0.01;
+                    break;
+                }
+                if(this.velocity.y*deltaTime < 0){
+                    this.velocity.y = 0;
+                    this.position.y = block.position.y + block.height + 0.01;
+                    break;
+                }
+            }
+        }
     }
 }
 
@@ -45,7 +84,7 @@ class Sprite{
         context.drawImage(this.image, this.position.x, this.position.y);
     }
 
-    move(){
+    render(){
         this.draw();
     }
 }
@@ -64,7 +103,7 @@ class CollisionBlock{
         context.fillRect(this.position.x, this.position.y, this.width, this.height)
     }
 
-    move(){
+    render(){
         this.draw();
     }
 }

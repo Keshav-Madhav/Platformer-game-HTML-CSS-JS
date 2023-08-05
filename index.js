@@ -15,8 +15,23 @@ const collisionBlocks = [];
 
 floorCollisions2D.forEach((row, y)=>{
     row.forEach((symbol, x)=>{
-        if(symbol===202){
+        if(symbol === 202){
             collisionBlocks.push(new CollisionBlock({position: {x: x * 16 , y: y * 16}}));
+        }
+    })
+});
+
+const platformCollisions2D = [];
+for(let i=0; i<platformCollisions.length; i+=36){
+    platformCollisions2D.push(platformCollisions.slice(i, i+36));
+}
+
+const platformBlocks = [];
+
+platformCollisions2D.forEach((row, y)=>{
+    row.forEach((symbol, x)=>{
+        if(symbol === 202){
+            platformBlocks.push(new CollisionBlock({position:{x: x*16, y: y*16}}));
         }
     })
 });
@@ -33,12 +48,14 @@ const key={
     }
 }
 
-const gravity = 9.8;
+const gravity = 6.8;
 
 const background = new Sprite({imageSrc: 'background', position: {x: 0, y: 0}, size: {width: boardWidth, height: boardHeight}});
 
-const player = new Player({x: 100, y: 0});
-const player2 = new Player({x: 300, y: 0});
+const player = new Player({
+    position:{x: boardWidth/8, y: boardHeight/2.5},
+    collisionBlocks,
+});
 
 //when the window is loaded
 window.onload = function() {
@@ -56,25 +73,31 @@ function update(timestamp) {
 
     context.clearRect(0, 0, board.width, board.height);
 
+    //making collision blocks
     context.save();
     context.scale(4, 4);
     context.translate(0, -background.image.height + board.height/4)
-    background.move();
+    background.render();
     collisionBlocks.forEach((collisionBlock)=>{
-        collisionBlock.move();
+        collisionBlock.render();
     });
-    context.restore();
+    platformBlocks.forEach((collisionBlock)=>{
+        collisionBlock.render();
+    });
 
+    //player movement
     player.move();
-    player2.move();
 
     player.velocity.x = 0;
     if(key.d.pressed){
-        player.velocity.x = 300;
+        player.velocity.x = 300/4;
     }
     else if(key.a.pressed){
-        player.velocity.x = -300;
+        player.velocity.x = -300/4;
     }
+    context.restore();
+
+    
 
     requestAnimationFrame(update);
 }
@@ -82,7 +105,7 @@ function update(timestamp) {
 //when the key is pressed
 window.addEventListener("keydown", (e)=> {
     if(e.key === 'ArrowUp' || e.key === 'w'){
-        player.velocity.y = -1000;
+        player.velocity.y = -350;
     }
     if(e.key === 'ArrowRight' || e.key === 'd'){
         key.d.pressed = true;
