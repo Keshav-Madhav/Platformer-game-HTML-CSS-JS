@@ -105,17 +105,17 @@ class Player extends Sprite{
     move() {
         this.renderFrames();
         this.updateHitbox();
-        //drawing image
-        context.fillStyle = 'rgba(0, 0, 0, 0.5)';
-        context.fillRect(this.position.x, this.position.y, this.width, this.height);
+        // //drawing image
+        // context.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        // context.fillRect(this.position.x, this.position.y, this.width, this.height);
 
-        //drawing hitbox
-        context.fillStyle = 'rgba(0, 255, 0, 0.5)';
-        context.fillRect(this.hitbox.position.x, this.hitbox.position.y, this.hitbox.width, this.hitbox.height);
+        // //drawing hitbox
+        // context.fillStyle = 'rgba(0, 255, 0, 0.5)';
+        // context.fillRect(this.hitbox.position.x, this.hitbox.position.y, this.hitbox.width, this.hitbox.height);
 
-        //drawing camera box
-        context.fillStyle = 'rgba(0, 0, 255, 0.5)';
-        context.fillRect(this.cameraBox.position.x, this.cameraBox.position.y, this.cameraBox.width, this.cameraBox.height);
+        // //drawing camera box
+        // context.fillStyle = 'rgba(0, 0, 255, 0.5)';
+        // context.fillRect(this.cameraBox.position.x, this.cameraBox.position.y, this.cameraBox.width, this.cameraBox.height);
 
         this.draw();
 
@@ -166,7 +166,7 @@ class Player extends Sprite{
                 y: this.position.y ,
             },
             width: board.width/6,
-            height: 80,
+            height: 95,
         }
     }
 
@@ -187,7 +187,7 @@ class Player extends Sprite{
         }
     }
 
-    panCameraRight({board, camera}){
+    panCameraRight({camera}){
         const cameraBoxLeft = this.cameraBox.position.x;
 
         if(cameraBoxLeft < 0)return;
@@ -195,7 +195,26 @@ class Player extends Sprite{
         if(cameraBoxLeft< Math.abs(camera.position.x)){
             camera.position.x -= this.velocity.x * deltaTime;
         }
+    }
 
+    panCameraDown({camera}){
+        const cameraBoxUp = this.cameraBox.position.y;
+
+        if(cameraBoxUp + this.velocity.y*deltaTime < 0)return;
+
+        if(cameraBoxUp < Math.abs(camera.position.y)){
+            camera.position.y -= this.velocity.y * deltaTime;
+        }
+    }
+
+    panCameraUp({board, camera}){
+        const cameraBoxDown = this.cameraBox.position.y + this.cameraBox.height;
+
+        if(cameraBoxDown + this.velocity.y*deltaTime > 432) return;
+
+        if(cameraBoxDown > Math.abs(camera.position.y) + board.height/4){
+            camera.position.y -= this.velocity.y * deltaTime;
+        }
     }
 
     checkHorzCollision(){

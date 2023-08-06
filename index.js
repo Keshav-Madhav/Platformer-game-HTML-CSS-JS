@@ -54,6 +54,7 @@ const key={
 const gravity = 6.8;
 
 const background = new Sprite({imageSrc: './Assets/background.png', position: {x: 0, y: 0}, size: {width: boardWidth, height: boardHeight}});
+const bgHeight = 432;
 
 const player = new Player({
     position:{x: boardWidth/12, y: boardHeight/2.5},
@@ -126,7 +127,7 @@ window.onload = function() {
 const camera={
     position: {
         x: 0,
-        y: 0,
+        y: -bgHeight + boardHeight/4,
     },
 }
 
@@ -140,16 +141,16 @@ function update(timestamp) {
     //making collision blocks
     context.save();
     context.scale(4, 4);
-    context.translate(camera.position.x, -background.image.height + board.height/4)
+    context.translate(camera.position.x, camera.position.y);
     background.render();
-    context.fillStyle = 'rgba(255, 0, 0, 0.5)';
-    collisionBlocks.forEach((collisionBlock)=>{
-        collisionBlock.render();
-    });
-    context.fillStyle = 'rgba(155, 155, 0, 0.5)';
-    platformBlocks.forEach((collisionBlock)=>{
-        collisionBlock.render();
-    });
+    // context.fillStyle = 'rgba(255, 0, 0, 0.5)';
+    // collisionBlocks.forEach((collisionBlock)=>{
+    //     collisionBlock.render();
+    // });
+    // context.fillStyle = 'rgba(155, 155, 0, 0.5)';
+    // platformBlocks.forEach((collisionBlock)=>{
+    //     collisionBlock.render();
+    // });
 
     //player movement
     player.checkHorzCanvasCollision();
@@ -166,7 +167,7 @@ function update(timestamp) {
         player.switchSprite('runLeft');
         player.velocity.x = -400/4;
         player.lastDirection = 'left';
-        player.panCameraRight({board, camera});
+        player.panCameraRight({camera});
     }
     else if( player.velocity.y === 0){ 
         player.updateLastPosition();
@@ -179,6 +180,7 @@ function update(timestamp) {
     }
 
     if(player.velocity.y < 0){
+        player.panCameraDown({camera});
         if(player.lastDirection === 'right'){
             player.switchSprite('jump');
         }
@@ -187,6 +189,7 @@ function update(timestamp) {
         }
     }
     else if(player.velocity.y > 0){
+        player.panCameraUp({board, camera});
         if(player.lastDirection === 'right'){
             player.switchSprite('fall');
         }
