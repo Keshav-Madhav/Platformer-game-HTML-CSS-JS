@@ -119,6 +119,7 @@ class Player extends Sprite{
         this.frameBuffer = this.animations[key].frameBuffer;
         this.frameSize = this.animations[key].frameSize;
         this.reverse = this.animations[key].reverse;
+        this.currentFrame = 0;
     }
 
     updateHitbox(){
