@@ -82,6 +82,7 @@ class Player extends Sprite{
         }
 
         this.lastDirection='right';
+        this.lastPosition = this.position;
 
         this.animations = animations;
         for(let key in this.animations){
@@ -111,6 +112,15 @@ class Player extends Sprite{
         this.position.y += this.velocity.y * deltaTime;
         this.updateHitbox();
         this.checkVertCollision();
+    }
+
+    updateLastPosition(){
+        this.lastPosition = {...this.position};
+    }
+
+    respawn() {
+        this.position = {...this.lastPosition};
+        this.position.y -= 50;
     }
 
     switchSprite(key) {

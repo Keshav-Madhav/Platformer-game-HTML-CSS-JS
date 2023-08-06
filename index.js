@@ -6,6 +6,9 @@ let context;
 let deltaTime = 0;
 let lastFrameTime = null;
 
+let gamePaused = false;
+let userPaused = false;
+
 const floorCollisions2D = [];
 for(let i=0; i<floorCollisions.length; i+=36){
     floorCollisions2D.push(floorCollisions.slice(i, i+36));
@@ -121,6 +124,7 @@ window.onload = function() {
 
 //update the game
 function update(timestamp) {
+    if(gamePaused) return;
     deltaTime = getDeltaTime(timestamp);
 
     context.clearRect(0, 0, board.width, board.height);
@@ -185,14 +189,18 @@ function update(timestamp) {
 
 //when the key is pressed
 window.addEventListener("keydown", (e)=> {
-    if(e.key === 'ArrowUp' || e.key === 'w'){
+    if(gamePaused) return;
+    if((e.key === 'ArrowUp' || e.key === 'w') && player.velocity.y === 0){
         player.velocity.y = -350;
+        player.updateLastPosition();
     }
     if(e.key === 'ArrowRight' || e.key === 'd'){
         key.d.pressed = true;
+        player.updateLastPosition();
     }
     if(e.key === 'ArrowLeft' || e.key === 'a'){
         key.a.pressed = true;
+        player.updateLastPosition();
     }
 });
 
@@ -200,9 +208,11 @@ window.addEventListener("keydown", (e)=> {
 window.addEventListener("keyup", (e)=> {
     if(e.key === 'ArrowRight' || e.key === 'd'){
         key.d.pressed = false;
+        player.updateLastPosition();
     }
     if(e.key === 'ArrowLeft' || e.key === 'a'){
         key.a.pressed = false;
+        player.updateLastPosition();
     }
 });
 
@@ -223,3 +233,14 @@ function getDeltaTime(timestamp) {
     return deltaTime;
 }
 
+window.addEventListener("keydown", function(e) {
+    if (e.key === "Escape" || e.key === "p") {
+        gamePaused = !gamePaused;
+        userPaused = gamePaused;
+        requestAnimationFrame(update);
+    }
+    if(e.key === "r"){
+        player.respawn();
+        console.log('respawned');
+    }
+});
