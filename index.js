@@ -57,6 +57,56 @@ const player = new Player({
     collisionBlocks,
     imageSrc: './Assets/warrior/Idle.png',
     frameSize: 8,
+    animations:{
+        idle: {
+            imageSrc: './Assets/warrior/Idle.png',
+            frameSize: 8,
+            frameBuffer: 10,
+            reverse: false,
+        },
+        run: {
+            imageSrc: './Assets/warrior/Run.png',
+            frameSize: 8,
+            frameBuffer: 12,
+            reverse: false,
+        },
+        jump: {
+            imageSrc: './Assets/warrior/Jump.png',
+            frameSize: 2,
+            frameBuffer: 8,
+            reverse: false,
+        },
+        fall:{
+            imageSrc: './Assets/warrior/Fall.png',
+            frameSize: 2,
+            frameBuffer: 8,
+            reverse: false,
+        },
+        idleLeft:{
+            imageSrc: './Assets/warrior/IdleLeft.png',
+            frameSize: 8,
+            frameBuffer: 10,
+            reverse: true,
+        },
+        runLeft:{
+            imageSrc: './Assets/warrior/RunLeft.png',
+            frameSize: 8,
+            frameBuffer: 12,
+            reverse: true,
+        },
+        jumpLeft:{
+            imageSrc: './Assets/warrior/JumpLeft.png',
+            frameSize: 2,
+            frameBuffer: 8,
+            reverse: true,
+        },
+        fallLeft:{
+            imageSrc: './Assets/warrior/FallLeft.png',
+            frameSize: 2,
+            frameBuffer: 8,
+            reverse: true,
+        }
+    }
 });
 
 //when the window is loaded
@@ -80,9 +130,11 @@ function update(timestamp) {
     context.scale(4, 4);
     context.translate(0, -background.image.height + board.height/4)
     background.render();
+    context.fillStyle = 'rgba(255, 0, 0, 0.5)';
     collisionBlocks.forEach((collisionBlock)=>{
         collisionBlock.render();
     });
+    context.fillStyle = 'rgba(155, 155, 0, 0.5)';
     platformBlocks.forEach((collisionBlock)=>{
         collisionBlock.render();
     });
@@ -92,14 +144,41 @@ function update(timestamp) {
 
     player.velocity.x = 0;
     if(key.d.pressed){
+        player.switchSprite('run');
         player.velocity.x = 400/4;
+        player.lastDirection = 'right';
     }
     else if(key.a.pressed){
+        player.switchSprite('runLeft');
         player.velocity.x = -400/4;
+        player.lastDirection = 'left';
+    }
+    else if( player.velocity.y === 0){
+        if(player.lastDirection === 'right'){
+            player.switchSprite('idle');
+        }
+        else{
+            player.switchSprite('idleLeft');
+        }
+    }
+
+    if(player.velocity.y < 0){
+        if(player.lastDirection === 'right'){
+            player.switchSprite('jump');
+        }
+        else{
+            player.switchSprite('jumpLeft');
+        }
+    }
+    else if(player.velocity.y > 0){
+        if(player.lastDirection === 'right'){
+            player.switchSprite('fall');
+        }
+        else{
+            player.switchSprite('fallLeft');
+        }
     }
     context.restore();
-
-    
 
     requestAnimationFrame(update);
 }

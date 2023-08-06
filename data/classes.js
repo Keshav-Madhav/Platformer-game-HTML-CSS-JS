@@ -1,13 +1,16 @@
 //sprite class
 class Sprite{
-    constructor({imageSrc, position, frameSize=1, frameBuffer=10, scale=1}){
+    constructor({imageSrc, position, frameSize=1, frameBuffer=10, scale=1, reverse=false}){
         this.scale=scale;
+        this.loaded = false;
         this.image = new Image();
         this.image.src = imageSrc;
         this.position = position;
+        this.reverse = reverse;
         this.image.onload = ()=>{
             this.width = (this.image.width/this.frameSize) * this.scale;
             this.height = this.image.height * this.scale;
+            this.loaded = true;
         }
         this.frameSize = frameSize;
         this.currentFrame = 0;
@@ -39,10 +42,20 @@ class Sprite{
     renderFrames(){
         this.elapsedFrames++;
         if(this.elapsedFrames % this.frameBuffer === 0){
-            this.currentFrame++;
-            if(this.currentFrame >= this.frameSize){
-                this.currentFrame = 0;
+            if(this.reverse) {
+                // traverse frames in reverse order
+                this.currentFrame--;
+                if(this.currentFrame < 0){
+                    this.currentFrame = this.frameSize - 1;
+                }
+            } else {
+                // traverse frames in forward order
+                this.currentFrame++;
+                if(this.currentFrame >= this.frameSize){
+                    this.currentFrame = 0;
+                }
             }
+            
         }
     }
 }
@@ -50,8 +63,8 @@ class Sprite{
 
 //player class
 class Player extends Sprite{
-    constructor({position, collisionBlocks, imageSrc, frameSize, scale=0.6}) {
-        super({imageSrc: imageSrc, position: position, frameSize: frameSize, scale: scale});
+    constructor({position, collisionBlocks, imageSrc, frameSize, scale=0.6, animations}) {
+        super({imageSrc: imageSrc, position: position, frameSize: frameSize, scale: scale, reverse: false});
         this.position = position;
         this.velocity ={
             x:0,
@@ -66,6 +79,15 @@ class Player extends Sprite{
             },
             width:14,
             height:31,
+        }
+
+        this.lastDirection='right';
+
+        this.animations = animations;
+        for(let key in this.animations){
+            const image = new Image();
+            image.src = this.animations[key].imageSrc;
+            this.animations[key].image = image;
         }
     }
 
@@ -85,10 +107,18 @@ class Player extends Sprite{
         this.position.x += this.velocity.x * deltaTime;
         this.updateHitbox();
         this.checkHorzCollision();
-        this.position.y += this.velocity.y * deltaTime;
         this.velocity.y += gravity;
+        this.position.y += this.velocity.y * deltaTime;
         this.updateHitbox();
         this.checkVertCollision();
+    }
+
+    switchSprite(key) {
+        if (this.image === this.animations[key].image || !this.loaded) return;
+        this.image = this.animations[key].image;
+        this.frameBuffer = this.animations[key].frameBuffer;
+        this.frameSize = this.animations[key].frameSize;
+        this.reverse = this.animations[key].reverse;
     }
 
     updateHitbox(){
@@ -154,7 +184,6 @@ class CollisionBlock{
     }
 
     draw(){
-        context.fillStyle = 'rgba(255, 0, 0, 0.5)';
         context.fillRect(this.position.x, this.position.y, this.width, this.height)
     }
 
