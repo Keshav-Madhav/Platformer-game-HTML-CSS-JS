@@ -9,6 +9,8 @@ let lastFrameTime = null;
 let gamePaused = false;
 let userPaused = false;
 
+let score=0;
+
 const floorCollisions2D = [];
 for(let i=0; i<floorCollisions.length; i+=36){
     floorCollisions2D.push(floorCollisions.slice(i, i+36));
@@ -55,6 +57,24 @@ const gravity = 6.8;
 
 const background = new Sprite({imageSrc: './Assets/background.png', position: {x: 0, y: 0}, size: {width: boardWidth, height: boardHeight}});
 const bgHeight = 432;
+
+const coin = new Sprite({
+    imageSrc: './Assets/coin.png', 
+    position: {x:110, y: 290},
+    frameSize: 6, 
+    frameBuffer: 10,
+    scale: 0.12,
+});
+
+const coinSpawnLocations = [];
+
+for (let i = 0; i < platformBlocks.length; i += 3) {
+    const middlePlatformBlock = platformBlocks[i + 1];
+    coinSpawnLocations.push({
+        x: middlePlatformBlock.position.x,
+        y: middlePlatformBlock.position.y -15,
+    });
+}
 
 const player = new Player({
     position:{x: boardWidth/12, y: boardHeight/2.5},
@@ -120,6 +140,13 @@ window.onload = function() {
     board.width = boardWidth;
     board.height = boardHeight;
     context = board.getContext('2d');
+    const coin = new Sprite({
+        imageSrc: './Assets/coin.png', 
+        position: {x:110, y: 290},
+        frameSize: 6, 
+        frameBuffer: 10,
+        scale: 0.12,
+    });
 
     requestAnimationFrame(update);
 }
@@ -155,6 +182,15 @@ function update(timestamp) {
     //player movement
     player.checkHorzCanvasCollision();
     player.move();
+    drawArrow();
+
+    coin.render();
+    if (collisionDetection({object1: player.hitbox, object2: coin})) {
+        spawnCoin();
+        score+=10;
+        document.getElementById('score').innerHTML = "Score: "+score;
+        console.log(score);
+    }
 
     player.velocity.x = 0;
     if(key.d.pressed){
@@ -202,6 +238,58 @@ function update(timestamp) {
     requestAnimationFrame(update);
 }
 
+function spawnCoin() {
+    const randomIndex = Math.floor(Math.random() * coinSpawnLocations.length);
+    coin.position.x = coinSpawnLocations[randomIndex].x;
+    coin.position.y = coinSpawnLocations[randomIndex].y;
+}
+
+function drawArrow() {
+    context.strokeStyle = 'rgba(155,155,155, 0.3)';
+    // Calculate the angle between the player and the coin
+    const angle = Math.atan2(coin.position.y - player.hitbox.position.y, coin.position.x - player.hitbox.position.x);
+
+    // Set the distance between the player and the start of the arrow
+    const gap = 10;
+
+    // Set the position of the arrow near the player
+    const arrowX = player.hitbox.position.x + gap * Math.cos(angle) + 12;
+    const arrowY = player.hitbox.position.y + gap * Math.sin(angle) + 3;
+
+    // Set the length of the arrow
+    const arrowLength = 10;
+
+    // Calculate the end position of the arrow
+    const endX = arrowX + arrowLength * Math.cos(angle);
+    const endY = arrowY + arrowLength * Math.sin(angle);
+
+    // Draw the arrow
+    context.beginPath();
+    context.moveTo(arrowX, arrowY);
+    context.lineTo(endX, endY);
+
+    // Set the size of the arrowhead
+    const headLength = 4;
+
+    // Calculate the position of the first point of the arrowhead
+    const headX1 = endX - headLength * Math.cos(angle - Math.PI / 6);
+    const headY1 = endY - headLength * Math.sin(angle - Math.PI / 6);
+
+    // Calculate the position of the second point of the arrowhead
+    const headX2 = endX - headLength * Math.cos(angle + Math.PI / 6);
+    const headY2 = endY - headLength * Math.sin(angle + Math.PI / 6);
+
+    // Draw the first line of the arrowhead
+    context.lineTo(headX1, headY1);
+
+    // Move back to the end position of the arrow
+    context.moveTo(endX, endY);
+
+    // Draw the second line of the arrowhead
+    context.lineTo(headX2, headY2);
+
+    context.stroke();
+}
 //when the key is pressed
 window.addEventListener("keydown", (e)=> {
     if(gamePaused) return;
