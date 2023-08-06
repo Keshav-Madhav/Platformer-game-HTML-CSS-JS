@@ -34,7 +34,7 @@ const platformBlocks = [];
 platformCollisions2D.forEach((row, y)=>{
     row.forEach((symbol, x)=>{
         if(symbol === 202){
-            platformBlocks.push(new CollisionBlock({position:{x: x*16, y: y*16}}));
+            platformBlocks.push(new CollisionBlock({position:{x: x*16, y: y*16}, height: 4}));
         }
     })
 });
@@ -58,6 +58,7 @@ const background = new Sprite({imageSrc: './Assets/background.png', position: {x
 const player = new Player({
     position:{x: boardWidth/8, y: boardHeight/2.5},
     collisionBlocks,
+    platformBlocks,
     imageSrc: './Assets/warrior/Idle.png',
     frameSize: 8,
     animations:{

@@ -63,7 +63,7 @@ class Sprite{
 
 //player class
 class Player extends Sprite{
-    constructor({position, collisionBlocks, imageSrc, frameSize, scale=0.6, animations}) {
+    constructor({position, collisionBlocks, platformBlocks, imageSrc, frameSize, scale=0.6, animations}) {
         super({imageSrc: imageSrc, position: position, frameSize: frameSize, scale: scale, reverse: false});
         this.position = position;
         this.velocity ={
@@ -72,12 +72,13 @@ class Player extends Sprite{
         };
     
         this.collisionBlocks = collisionBlocks;
+        this.platformBlocks = platformBlocks;
         this.hitbox={
             position:{
-                x: this.position.x + this.width/2 - 5,
+                x: this.position.x + this.width/2 - 7,
                 y: this.position.y + this.height/2 -1,
             },
-            width:14,
+            width:20,
             height:31,
         }
 
@@ -135,15 +136,16 @@ class Player extends Sprite{
     updateHitbox(){
         this.hitbox={
             position:{
-                x: this.position.x + this.width/2 - 5,
+                x: this.position.x + this.width/2 - 9,
                 y: this.position.y + this.height/2 -1,
             },
-            width:14,
+            width:18,
             height:31,
         }
     }
 
     checkHorzCollision(){
+        //floor collision
         for(let i=0; i< this.collisionBlocks.length; i++){
             const block = this.collisionBlocks[i];
 
@@ -162,9 +164,31 @@ class Player extends Sprite{
                 }
             }
         }
+
+        // //platform collision
+        // for(let i=0; i< this.platformBlocks.length; i++){
+        //     const block2 = this.platformBlocks[i];
+
+        //     if(collisionDetection({object1: this.hitbox, object2: block2})){
+        //         if(this.velocity.x * deltaTime > 0){
+        //             this.velocity.x = 0;
+        //             const offset= this.hitbox.position.x - this.position.x + this.hitbox.width;
+        //             this.position.x = block2.position.x - offset - 0.01;
+        //             break;
+        //         }
+        //         if(this.velocity.x * deltaTime < 0){
+        //             this.velocity.x = 0;
+        //             const offset= this.hitbox.position.x - this.position.x;
+        //             this.position.x = block2.position.x + block2.width -offset + 0.01;
+        //             break
+        //         }
+        //     }
+        // }
     }
 
     checkVertCollision(){
+
+        //floor collision
         for(let i=0; i< this.collisionBlocks.length; i++){
             const block = this.collisionBlocks[i];
 
@@ -183,15 +207,29 @@ class Player extends Sprite{
                 }
             }
         }
+
+        //platform collision
+        for(let i=0; i< this.platformBlocks.length; i++){
+            const block2 = this.platformBlocks[i];
+
+            if(collisionDetection2({object1: this.hitbox, object2: block2})){
+                if(this.velocity.y*deltaTime > 0){
+                    this.velocity.y = 0;
+                    const offset= this.hitbox.position.y - this.position.y + this.hitbox.height;
+                    this.position.y = block2.position.y - offset  - 0.01;
+                    break;
+                }
+            }
+        }
     }
 }
 
 //collision block class
 class CollisionBlock{
-    constructor({position}){
+    constructor({position, height=16}){
         this.position = position;
         this.width = 16;
-        this.height = 16;
+        this.height = height;
     }
 
     draw(){
