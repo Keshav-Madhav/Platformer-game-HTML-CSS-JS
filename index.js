@@ -6,8 +6,10 @@ let context;
 let deltaTime = 0;
 let lastFrameTime = null;
 
+let startTime=null;
+let elapsedTime=0;
+
 let gamePaused = false;
-let userPaused = false;
 
 let score=0;
 
@@ -235,6 +237,16 @@ function update(timestamp) {
     }
     context.restore();
 
+    if (score > 0 && !gamePaused) {
+        if (startTime === null) {
+            startTime = window.performance.now();
+        } else {
+            elapsedTime = window.performance.now() - startTime;
+        }
+        const timerElement = document.getElementById('timer');
+        timerElement.textContent = `Time: ${Math.floor(elapsedTime / 1000)}s`;
+    }
+
     requestAnimationFrame(update);
 }
 
@@ -334,7 +346,9 @@ function getDeltaTime(timestamp) {
 window.addEventListener("keydown", function(e) {
     if (e.key === "Escape" || e.key === "p") {
         gamePaused = !gamePaused;
-        userPaused = gamePaused;
+        if (!gamePaused) {
+            startTime = window.performance.now() - elapsedTime;
+        }
         requestAnimationFrame(update);
     }
     if(e.key === "r"){

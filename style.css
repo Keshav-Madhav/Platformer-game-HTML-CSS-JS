@@ -23,3 +23,12 @@ canvas{
     left:20px;
     font-family: 'MedievalSharp', cursive;
 }
+
+#timer{
+    color: white;
+    font-size: 30px;
+    position: absolute;
+    top: 10px;
+    right:20px;
+    font-family: 'MedievalSharp', cursive;
+}
