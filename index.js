@@ -56,7 +56,7 @@ const gravity = 6.8;
 const background = new Sprite({imageSrc: './Assets/background.png', position: {x: 0, y: 0}, size: {width: boardWidth, height: boardHeight}});
 
 const player = new Player({
-    position:{x: boardWidth/8, y: boardHeight/2.5},
+    position:{x: boardWidth/12, y: boardHeight/2.5},
     collisionBlocks,
     platformBlocks,
     imageSrc: './Assets/warrior/Idle.png',
@@ -123,6 +123,13 @@ window.onload = function() {
     requestAnimationFrame(update);
 }
 
+const camera={
+    position: {
+        x: 0,
+        y: 0,
+    },
+}
+
 //update the game
 function update(timestamp) {
     if(gamePaused) return;
@@ -133,7 +140,7 @@ function update(timestamp) {
     //making collision blocks
     context.save();
     context.scale(4, 4);
-    context.translate(0, -background.image.height + board.height/4)
+    context.translate(camera.position.x, -background.image.height + board.height/4)
     background.render();
     context.fillStyle = 'rgba(255, 0, 0, 0.5)';
     collisionBlocks.forEach((collisionBlock)=>{
@@ -152,13 +159,15 @@ function update(timestamp) {
         player.switchSprite('run');
         player.velocity.x = 400/4;
         player.lastDirection = 'right';
+        player.panCameraLeft({board, camera});
     }
     else if(key.a.pressed){
         player.switchSprite('runLeft');
         player.velocity.x = -400/4;
         player.lastDirection = 'left';
     }
-    else if( player.velocity.y === 0){
+    else if( player.velocity.y === 0){ 
+        player.updateLastPosition();
         if(player.lastDirection === 'right'){
             player.switchSprite('idle');
         }
@@ -192,16 +201,13 @@ function update(timestamp) {
 window.addEventListener("keydown", (e)=> {
     if(gamePaused) return;
     if((e.key === 'ArrowUp' || e.key === 'w') && player.velocity.y === 0){
-        player.velocity.y = -350;
-        player.updateLastPosition();
+        player.velocity.y = -420;
     }
     if(e.key === 'ArrowRight' || e.key === 'd'){
         key.d.pressed = true;
-        player.updateLastPosition();
     }
     if(e.key === 'ArrowLeft' || e.key === 'a'){
         key.a.pressed = true;
-        player.updateLastPosition();
     }
 });
 
@@ -209,11 +215,9 @@ window.addEventListener("keydown", (e)=> {
 window.addEventListener("keyup", (e)=> {
     if(e.key === 'ArrowRight' || e.key === 'd'){
         key.d.pressed = false;
-        player.updateLastPosition();
     }
     if(e.key === 'ArrowLeft' || e.key === 'a'){
         key.a.pressed = false;
-        player.updateLastPosition();
     }
 });
 
