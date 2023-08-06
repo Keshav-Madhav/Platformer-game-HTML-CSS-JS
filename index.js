@@ -152,6 +152,7 @@ function update(timestamp) {
     });
 
     //player movement
+    player.checkHorzCanvasCollision();
     player.move();
 
     player.velocity.x = 0;
@@ -165,6 +166,7 @@ function update(timestamp) {
         player.switchSprite('runLeft');
         player.velocity.x = -400/4;
         player.lastDirection = 'left';
+        player.panCameraRight({board, camera});
     }
     else if( player.velocity.y === 0){ 
         player.updateLastPosition();
@@ -200,7 +202,7 @@ function update(timestamp) {
 //when the key is pressed
 window.addEventListener("keydown", (e)=> {
     if(gamePaused) return;
-    if((e.key === 'ArrowUp' || e.key === 'w') && player.velocity.y === 0){
+    if((e.key === 'ArrowUp' || e.key === 'w' || e.key === ' ') && player.velocity.y === 0){
         player.velocity.y = -420;
     }
     if(e.key === 'ArrowRight' || e.key === 'd'){

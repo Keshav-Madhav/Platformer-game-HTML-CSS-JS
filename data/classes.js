@@ -170,12 +170,32 @@ class Player extends Sprite{
         }
     }
 
+    checkHorzCanvasCollision(){
+        if(this.hitbox.position.x + this.hitbox.width + this.velocity.x * deltaTime > 576
+        || this.hitbox.position.x + this.velocity.x * deltaTime < 0){
+            this.velocity.x = 0;
+        }
+    }
+
     panCameraLeft({board, camera}){
         const cameraBoxRight = this.cameraBox.position.x + this.cameraBox.width;
+
+        if(cameraBoxRight > 576)return;
 
         if(cameraBoxRight > board.width/4 + Math.abs(camera.position.x)){
             camera.position.x -= this.velocity.x * deltaTime;
         }
+    }
+
+    panCameraRight({board, camera}){
+        const cameraBoxLeft = this.cameraBox.position.x;
+
+        if(cameraBoxLeft < 0)return;
+
+        if(cameraBoxLeft< Math.abs(camera.position.x)){
+            camera.position.x -= this.velocity.x * deltaTime;
+        }
+
     }
 
     checkHorzCollision(){
