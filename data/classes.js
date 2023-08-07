@@ -137,6 +137,7 @@ class Player extends Sprite{
     respawn() {
         this.position = {...this.lastPosition};
         this.position.y -= 10;
+        this.velocity.y = 0;
     }
 
     switchSprite(key) {
