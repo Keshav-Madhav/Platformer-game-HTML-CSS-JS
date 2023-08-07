@@ -55,7 +55,7 @@ const key={
     }
 }
 
-const gravity = 6.8;
+const gravity = 520;
 
 const background = new Sprite({imageSrc: './Assets/background.png', position: {x: 0, y: 0}, size: {width: boardWidth, height: boardHeight}});
 const bgHeight = 432;
@@ -306,7 +306,7 @@ function drawArrow() {
 window.addEventListener("keydown", (e)=> {
     if(gamePaused) return;
     if((e.key === 'ArrowUp' || e.key === 'w' || e.key === ' ') && player.velocity.y === 0){
-        player.velocity.y = -420;
+        player.velocity.y = -300;
     }
     if(e.key === 'ArrowRight' || e.key === 'd'){
         key.d.pressed = true;
@@ -349,6 +349,7 @@ window.addEventListener("keydown", function(e) {
         if (!gamePaused) {
             startTime = window.performance.now() - elapsedTime;
         }
+        player.respawn();
         requestAnimationFrame(update);
     }
     if(e.key === "r"){

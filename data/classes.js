@@ -123,7 +123,7 @@ class Player extends Sprite{
         this.position.x += this.velocity.x * deltaTime;
         this.updateHitbox();
         this.checkHorzCollision();
-        this.velocity.y += gravity;
+        this.velocity.y += gravity * deltaTime;
         this.position.y += this.velocity.y * deltaTime;
         this.updateHitbox();
         this.updateCameraBox();
