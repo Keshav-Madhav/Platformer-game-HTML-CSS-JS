@@ -264,6 +264,12 @@ function update(timestamp) {
 
 //restart game
 function restart(){
+    coin.position.y=290;
+    coin.position.x=110
+
+    camera.position.x = 0;
+    camera.position.y = -bgHeight + boardHeight/4;
+    
     player.position.x = boardWidth/12;
     player.position.y = boardHeight/2.5;
 
@@ -272,18 +278,13 @@ function restart(){
 
     startTime = null;
     elapsedTime = 0;
-    document.getElementById('timer').innerHTML = "";
+    document.getElementById('timers').innerHTML = "";
+    document.getElementById('timerms').innerHTML = "";
 
     player.velocity.x = 0;
     player.velocity.y = 0;
 
-    camera.position.x = 0;
-    camera.position.y = -bgHeight + boardHeight/4;
-
     player.switchSprite('idle');
-
-    coin.position.y=290;
-    coin.position.x=110
 }
 
 function checkCompetitionMode() {
