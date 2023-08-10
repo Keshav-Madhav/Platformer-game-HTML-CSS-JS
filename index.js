@@ -193,7 +193,7 @@ function update(timestamp) {
     coin.render();
     if (collisionDetection({object1: player.hitbox, object2: coin})) {
         spawnCoin();
-        score+=25;
+        score+=10;
         document.getElementById('score').innerHTML = "Score: "+score;
         console.log(score);
     }
@@ -419,15 +419,33 @@ window.addEventListener("keydown", function(e) {
     }
 
     if(e.key === "1"){
-        pausedAt100 = true;
+        pausedAt100 = !pausedAt100;
         console.log('paused at 100');
+        if(pausedAt100){
+            this.document.getElementById("comp").innerHTML="100 pause"
+        }
+        else{
+            this.document.getElementById("comp").innerHTML=""
+        }
     }
     if(e.key === "2"){
-        pausedAt200 = true;
+        pausedAt200 = !pausedAt200;
         console.log('paused at 200');
+        if(pausedAt200){
+            this.document.getElementById("comp").innerHTML="200 pause"
+        }
+        else{
+            this.document.getElementById("comp").innerHTML=""
+        }
     }
     if(e.key === "3"){
-        pausedAt120 = true;
+        pausedAt120 = !pausedAt120;
         console.log('paused at 120');
+        if(pausedAt120){
+            this.document.getElementById("comp").innerHTML="120sec pause"
+        }
+        else{
+            this.document.getElementById("comp").innerHTML=""
+        }
     }
 });
