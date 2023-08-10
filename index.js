@@ -10,6 +10,10 @@ let startTime=null;
 let elapsedTime=0;
 
 let gamePaused = false;
+let competitionMode = false;
+let pausedAt100 = false;
+let pausedAt200 = false;
+let pausedAt120 = false;
 
 let score=0;
 
@@ -189,7 +193,7 @@ function update(timestamp) {
     coin.render();
     if (collisionDetection({object1: player.hitbox, object2: coin})) {
         spawnCoin();
-        score+=10;
+        score+=25;
         document.getElementById('score').innerHTML = "Score: "+score;
         console.log(score);
     }
@@ -235,6 +239,9 @@ function update(timestamp) {
             player.switchSprite('fallLeft');
         }
     }
+
+    checkCompetitionMode();
+
     context.restore();
 
     if (score > 0 && !gamePaused) {
@@ -243,12 +250,63 @@ function update(timestamp) {
         } else {
             elapsedTime = window.performance.now() - startTime;
         }
-        const timerElement = document.getElementById('timer');
-        timerElement.textContent = `Time: ${Math.floor(elapsedTime / 1000)}s`;
+        const timers = document.getElementById('timers');
+        const timerms = document.getElementById('timerms')
+        const seconds = Math.floor(elapsedTime / 1000);
+        const milliseconds = Math.floor(elapsedTime % 1000);
+        timers.textContent = `Time: ${seconds}s`;
+        timerms.textContent =  `${milliseconds}ms`;
     }
+    
 
     requestAnimationFrame(update);
 }
+
+//restart game
+function restart(){
+    player.position.x = boardWidth/12;
+    player.position.y = boardHeight/2.5;
+
+    score = 0;
+    document.getElementById('score').innerHTML = "Score: "+score;
+
+    startTime = null;
+    elapsedTime = 0;
+    document.getElementById('timer').innerHTML = "";
+
+    player.velocity.x = 0;
+    player.velocity.y = 0;
+
+    camera.position.x = 0;
+    camera.position.y = -bgHeight + boardHeight/4;
+
+    player.switchSprite('idle');
+
+    coin.position.y=290;
+    coin.position.x=110
+}
+
+function checkCompetitionMode() {
+    if (score === 100 && pausedAt100) {
+        gamePaused = true;
+        pausedAt100 = false;
+        player.velocity.y=0;
+    }
+    
+    if (score === 200 && pausedAt200) {
+        gamePaused = true;
+        pausedAt200 = false;
+        player.velocity.y=0;
+    }
+
+    if (elapsedTime >= 120 * 1000 && pausedAt120) {
+        gamePaused = true;
+        pausedAt120 = false;
+        player.velocity.y=0;
+    }
+
+}
+
 
 function spawnCoin() {
     const randomIndex = Math.floor(Math.random() * coinSpawnLocations.length);
@@ -355,5 +413,21 @@ window.addEventListener("keydown", function(e) {
     if(e.key === "r"){
         player.respawn();
         console.log('respawned');
+    }
+    if(e.key === "i"){
+        restart();
+    }
+
+    if(e.key === "1"){
+        pausedAt100 = true;
+        console.log('paused at 100');
+    }
+    if(e.key === "2"){
+        pausedAt200 = true;
+        console.log('paused at 200');
+    }
+    if(e.key === "3"){
+        pausedAt120 = true;
+        console.log('paused at 120');
     }
 });
